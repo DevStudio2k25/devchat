@@ -69,6 +69,7 @@ class MessageService {
     DateTime? before,
   }) async {
     try {
+      // Fetch messages
       var query = _supabase
           .from('messages')
           .select()
@@ -77,12 +78,45 @@ class MessageService {
           .order('created_at', ascending: false)
           .limit(limit);
 
-      // Note: Pagination with 'before' parameter not fully supported in current implementation
-      // Will load all messages up to limit
-
       final response = await query;
+      final messages = (response as List).map((json) => json as Map<String, dynamic>).toList();
 
-      return (response as List)
+      // Fetch reactions for all messages
+      final messageIds = messages.map((m) => m['id'] as String).toList();
+      print('📊 Fetching reactions for ${messageIds.length} messages');
+      
+      if (messageIds.isNotEmpty) {
+        final reactionsResponse = await _supabase
+            .from('reactions')
+            .select()
+            .inFilter('message_id', messageIds);
+
+        print('🎭 Found ${(reactionsResponse as List).length} reactions');
+
+        // Group reactions by message_id and emoji
+        final reactionsMap = <String, Map<String, int>>{};
+        for (final reaction in reactionsResponse) {
+          final messageId = reaction['message_id'] as String;
+          final emoji = reaction['emoji'] as String;
+          
+          reactionsMap.putIfAbsent(messageId, () => {});
+          reactionsMap[messageId]![emoji] = (reactionsMap[messageId]![emoji] ?? 0) + 1;
+          print('   ➕ $emoji for message $messageId');
+        }
+
+        print('📦 Grouped reactions: $reactionsMap');
+
+        // Add reactions to messages
+        for (final message in messages) {
+          final messageId = message['id'] as String;
+          if (reactionsMap.containsKey(messageId)) {
+            message['reactions'] = reactionsMap[messageId];
+            print('   ✅ Added reactions to message $messageId: ${reactionsMap[messageId]}');
+          }
+        }
+      }
+
+      return messages
           .map((json) => MessageModel.fromJson(json))
           .toList()
           .reversed

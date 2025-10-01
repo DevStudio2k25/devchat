@@ -67,7 +67,12 @@ class ChatService {
     }
   }
 
-  /// Find existing direct chat between two users
+  /// Find existing direct chat between two users (public method)
+  Future<ChatModel?> findDirectChat(String otherUserId) async {
+    return _findDirectChat(otherUserId);
+  }
+
+  /// Find existing direct chat between two users (private method)
   Future<ChatModel?> _findDirectChat(String otherUserId) async {
     try {
       final response = await _supabase.rpc('find_direct_chat', params: {

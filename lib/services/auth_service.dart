@@ -22,7 +22,13 @@ class AuthService {
     required String password,
     String? username,
   }) async {
+    print('🔵 Starting signup process...');
+    print('📧 Email: $email');
+    print('👤 Username: ${username ?? email.split('@')[0]}');
+    
     try {
+      print('🔄 Calling Supabase auth.signUp()...');
+      
       final response = await _supabase.auth.signUp(
         email: email,
         password: password,
@@ -31,13 +37,61 @@ class AuthService {
         },
       );
 
+      print('📦 Response received from Supabase');
+      print('✅ User created: ${response.user?.id}');
+      print('📧 User email: ${response.user?.email}');
+      print('🔑 Session: ${response.session != null ? "Yes" : "No"}');
+
       if (response.user != null) {
         print('✅ Sign up successful: ${response.user!.email}');
+        print('ℹ️ User profile should be created by database trigger');
+        
+        // Wait a bit for trigger to execute
+        await Future.delayed(const Duration(milliseconds: 500));
+        
+        // Try to verify profile was created
+        try {
+          print('🔍 Checking if user profile was created...');
+          final profile = await _supabase
+              .from('users')
+              .select()
+              .eq('id', response.user!.id)
+              .maybeSingle();
+          
+          if (profile != null) {
+            print('✅ User profile found in database!');
+            print('📝 Profile data: $profile');
+          } else {
+            print('⚠️ User profile NOT found - trigger may not have run');
+            print('🔧 Attempting manual profile creation...');
+            
+            // Manual fallback
+            await _supabase.from('users').insert({
+              'id': response.user!.id,
+              'email': email,
+              'username': username ?? email.split('@')[0],
+              'display_name': username ?? email.split('@')[0],
+              'status': 'online',
+              'created_at': DateTime.now().toIso8601String(),
+              'updated_at': DateTime.now().toIso8601String(),
+            });
+            print('✅ Manual profile creation successful!');
+          }
+        } catch (profileError) {
+          print('⚠️ Profile check/creation error: $profileError');
+          // Don't fail signup if profile check fails
+        }
       }
 
       return response;
     } catch (e) {
       print('❌ Sign up error: $e');
+      print('❌ Error type: ${e.runtimeType}');
+      if (e.toString().contains('Database error')) {
+        print('🔴 DATABASE ERROR DETECTED!');
+        print('💡 This means the trigger is not working or users table has issues');
+        print('📋 Check: 1) Trigger exists, 2) Users table structure, 3) RLS policies');
+      }
       rethrow;
     }
   }

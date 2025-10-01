@@ -10,6 +10,7 @@ class MessageModel {
   final bool isDeleted;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final Map<String, int>? reactions; // emoji -> count
 
   MessageModel({
     required this.id,
@@ -23,10 +24,17 @@ class MessageModel {
     this.isDeleted = false,
     required this.createdAt,
     required this.updatedAt,
+    this.reactions,
   });
 
   // From JSON (Supabase)
   factory MessageModel.fromJson(Map<String, dynamic> json) {
+    // Parse reactions if present
+    Map<String, int>? reactionsMap;
+    if (json['reactions'] != null) {
+      reactionsMap = Map<String, int>.from(json['reactions'] as Map);
+    }
+    
     return MessageModel(
       id: json['id'] as String,
       chatId: json['chat_id'] as String,
@@ -39,6 +47,7 @@ class MessageModel {
       isDeleted: json['is_deleted'] as bool? ?? false,
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
+      reactions: reactionsMap,
     );
   }
 
@@ -72,6 +81,7 @@ class MessageModel {
     bool? isDeleted,
     DateTime? createdAt,
     DateTime? updatedAt,
+    Map<String, int>? reactions,
   }) {
     return MessageModel(
       id: id ?? this.id,
@@ -85,6 +95,7 @@ class MessageModel {
       isDeleted: isDeleted ?? this.isDeleted,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      reactions: reactions ?? this.reactions,
     );
   }
 

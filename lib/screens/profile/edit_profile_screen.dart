@@ -1,7 +1,9 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:devchat/services/user_service.dart';
 import 'package:devchat/models/user_model.dart';
+import 'package:devchat/utils/file_picker_helper.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -21,6 +23,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   UserModel? _userProfile;
   bool _isLoading = true;
   bool _isSaving = false;
+  File? _selectedImage;
 
   @override
   void initState() {
@@ -41,10 +44,60 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
+  Future<void> _pickImage() async {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_camera),
+              title: const Text('Camera'),
+              onTap: () async {
+                Navigator.pop(context);
+                final image = await FilePickerHelper.pickImageFromCamera();
+                if (image != null) {
+                  setState(() {
+                    _selectedImage = image;
+                  });
+                }
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text('Gallery'),
+              onTap: () async {
+                Navigator.pop(context);
+                final image = await FilePickerHelper.pickImageFromGallery();
+                if (image != null) {
+                  setState(() {
+                    _selectedImage = image;
+                  });
+                }
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Future<void> _saveProfile() async {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isSaving = true);
+
+    // Upload image if selected
+    String? avatarUrl;
+    if (_selectedImage != null) {
+      print('📸 Uploading avatar image...');
+      avatarUrl = await _userService.uploadAvatar(_selectedImage!);
+      if (avatarUrl != null) {
+        print('✅ Avatar uploaded: $avatarUrl');
+      } else {
+        print('❌ Avatar upload failed');
+      }
+    }
 
     final success = await _userService.updateUserProfile(
       userId: _userProfile!.id,
@@ -55,6 +108,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       bio: _bioController.text.trim().isEmpty 
           ? null 
           : _bioController.text.trim(),
+      avatarUrl: avatarUrl ?? _userProfile?.avatarUrl,
     );
 
     setState(() => _isSaving = false);
@@ -169,10 +223,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     child: CircleAvatar(
                                       radius: 60,
                                       backgroundColor: Colors.white,
-                                      backgroundImage: _userProfile?.avatarUrl != null
-                                          ? NetworkImage(_userProfile!.avatarUrl!)
-                                          : null,
-                                      child: _userProfile?.avatarUrl == null
+                                      backgroundImage: _selectedImage != null
+                                          ? FileImage(_selectedImage!)
+                                          : (_userProfile?.avatarUrl != null
+                                              ? NetworkImage(_userProfile!.avatarUrl!)
+                                              : null) as ImageProvider?,
+                                      child: _selectedImage == null && _userProfile?.avatarUrl == null
                                           ? Text(
                                               _userProfile?.initials ?? '?',
                                               style: const TextStyle(
@@ -203,14 +259,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       ),
                                       child: IconButton(
                                         icon: const Icon(Icons.camera_alt, color: Colors.white),
-                                        onPressed: () {
-                                          // TODO: Implement image picker
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            const SnackBar(
-                                              content: Text('Image picker coming soon!'),
-                                            ),
-                                          );
-                                        },
+                                        onPressed: _pickImage,
                                       ),
                                     ),
                                   ),

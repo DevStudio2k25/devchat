@@ -50,7 +50,33 @@ class _UserSearchScreenState extends State<UserSearchScreen> {
   }
 
   Future<void> _createChatWithUser(UserModel user) async {
+    print('🔵 Creating/finding chat with user: ${user.displayName}');
+    
     // Show loading
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
+
+    // Check if chat already exists
+    print('🔍 Checking for existing chat...');
+    final existingChat = await _chatService.findDirectChat(user.id);
+    
+    if (!mounted) return;
+    Navigator.pop(context); // Close loading
+
+    if (existingChat != null) {
+      print('✅ Found existing chat: ${existingChat.id}');
+      context.go(AppRoutes.getChatRoute(existingChat.id));
+      return;
+    }
+
+    print('ℹ️ No existing chat, creating new one...');
+    
+    // Show loading again for creation
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -62,12 +88,13 @@ class _UserSearchScreenState extends State<UserSearchScreen> {
     final chat = await _chatService.createDirectChat(user.id);
 
     if (!mounted) return;
-
     Navigator.pop(context); // Close loading
 
     if (chat != null) {
+      print('✅ Chat created: ${chat.id}');
       context.go(AppRoutes.getChatRoute(chat.id));
     } else {
+      print('❌ Failed to create chat');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Failed to create chat'),

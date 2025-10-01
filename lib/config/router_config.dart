@@ -4,6 +4,7 @@ import 'package:devchat/constants/app_routes.dart';
 import 'package:devchat/screens/auth/login_screen.dart';
 import 'package:devchat/screens/auth/signup_screen.dart';
 import 'package:devchat/screens/auth/forgot_password_screen.dart';
+import 'package:devchat/screens/splash_screen.dart';
 import 'package:devchat/screens/chat/chat_list_screen.dart';
 import 'package:devchat/screens/chat/chat_screen.dart';
 import 'package:devchat/screens/chat/user_search_screen.dart';
@@ -60,11 +61,11 @@ class RouterConfig {
 
     // Routes
     routes: [
-      // Splash / Root - redirect to login
+      // Splash / Root - check auth
       GoRoute(
         path: AppRoutes.splash,
         name: 'splash',
-        redirect: (context, state) => AppRoutes.login,
+        builder: (context, state) => const SplashScreen(),
       ),
 
       // Auth routes
@@ -162,7 +163,7 @@ class RouterConfig {
       GoRoute(
         path: AppRoutes.search,
         name: 'search',
-        builder: (context, state) => const _PlaceholderScreen(title: 'Search'),
+        builder: (context, state) => const UserSearchScreen(),
       ),
 
       // New chat

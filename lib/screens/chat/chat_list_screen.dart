@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:devchat/services/chat_service.dart';
+import 'package:devchat/services/user_service.dart';
+import 'package:devchat/services/message_service.dart';
 import 'package:devchat/models/chat_model.dart';
+import 'package:devchat/models/user_model.dart';
 import 'package:devchat/constants/app_routes.dart';
 
 class ChatListScreen extends StatefulWidget {
@@ -14,10 +17,14 @@ class ChatListScreen extends StatefulWidget {
 class _ChatListScreenState extends State<ChatListScreen>
     with SingleTickerProviderStateMixin {
   final ChatService _chatService = ChatService();
+  final UserService _userService = UserService();
+  final MessageService _messageService = MessageService();
   List<ChatModel> _chats = [];
+  Map<String, UserModel> _otherUsers = {}; // Store other users for direct chats
+  Map<String, String> _lastMessages = {}; // Store last messages
   bool _isLoading = true;
-
   late AnimationController _animationController;
+  UserModel? _currentUser;
 
   @override
   void initState() {
@@ -30,11 +37,85 @@ class _ChatListScreenState extends State<ChatListScreen>
   }
 
   Future<void> _loadChats() async {
+    print('📋 Loading chats...');
+    
+    // Load current user profile
+    _currentUser = await _userService.getCurrentUserProfile();
+    print('👤 Current user loaded: ${_currentUser?.username}');
+    
     final chats = await _chatService.getUserChats();
+    print('✅ Loaded ${chats.length} chats');
+
+    final currentUserId = _chatService.currentUserId;
+    for (var chat in chats) {
+      // Load other user for direct chats
+      if (!chat.isGroup) {
+        print('👥 Loading other user for chat: ${chat.id}');
+        final members = await _chatService.getChatMembers(chat.id);
+        print('   Found ${members.length} members');
+        
+        final otherMember = members.firstWhere(
+          (m) => m.userId != currentUserId,
+          orElse: () => members.first,
+        );
+        
+        final otherUser = await _userService.getUserProfile(otherMember.userId);
+        if (otherUser != null) {
+          _otherUsers[chat.id] = otherUser;
+          print('   ✅ Loaded: ${otherUser.displayName}');
+        }
+      }
+      
+      // Load last message
+      print('📨 Loading last message for chat: ${chat.id}');
+      final messages = await _messageService.getMessages(chatId: chat.id, limit: 1);
+      if (messages.isNotEmpty) {
+        final lastMsg = messages.first;
+        final isMe = lastMsg.senderId == currentUserId;
+        final prefix = isMe ? 'You: ' : '';
+        
+        // Check if it's a file/media message
+        final content = lastMsg.content ?? '';
+        String displayText;
+        
+        if (content.contains('supabase.co/storage')) {
+          // It's a file - determine type
+          if (content.contains('.jpg') || content.contains('.jpeg') || 
+              content.contains('.png') || content.contains('.webp') || content.contains('.gif')) {
+            displayText = '📷 Photo';
+          } else if (content.contains('.mp4') || content.contains('.mov') || 
+                     content.contains('.avi') || content.contains('.webm')) {
+            displayText = '🎥 Video';
+          } else if (content.contains('.pdf') || content.contains('.doc') || 
+                     content.contains('.docx') || content.contains('.txt') || 
+                     content.contains('.xls') || content.contains('.xlsx') || 
+                     content.contains('.ppt') || content.contains('.pptx')) {
+            displayText = '📄 Document';
+          } else if (content.contains('.mp3') || content.contains('.wav') || 
+                     content.contains('.m4a') || content.contains('.aac') || 
+                     content.contains('.ogg')) {
+            displayText = '🎵 Audio';
+          } else {
+            displayText = '📎 File';
+          }
+        } else {
+          // Regular text message
+          displayText = content;
+        }
+        
+        _lastMessages[chat.id] = '$prefix$displayText';
+        print('   ✅ Last message: ${_lastMessages[chat.id]}');
+      } else {
+        _lastMessages[chat.id] = 'No messages yet';
+        print('   ℹ️ No messages');
+      }
+    }
+    
     setState(() {
       _chats = chats;
       _isLoading = false;
     });
+    print('✅ Chat list loaded with ${_otherUsers.length} other users');
     _animationController.forward();
   }
 
@@ -83,10 +164,15 @@ class _ChatListScreenState extends State<ChatListScreen>
                             ),
                           ],
                         ),
-                        child: const CircleAvatar(
+                        child: CircleAvatar(
                           radius: 20,
                           backgroundColor: Colors.transparent,
-                          child: Icon(Icons.person, color: Colors.white),
+                          backgroundImage: _currentUser?.avatarUrl != null
+                              ? NetworkImage(_currentUser!.avatarUrl!)
+                              : null,
+                          child: _currentUser?.avatarUrl == null
+                              ? const Icon(Icons.person, color: Colors.white)
+                              : null,
                         ),
                       ),
                     ),
@@ -151,6 +237,14 @@ class _ChatListScreenState extends State<ChatListScreen>
   }
 
   Widget _buildChatItem(ChatModel chat, int index) {
+    final otherUser = _otherUsers[chat.id];
+    final displayName = chat.isGroup 
+        ? (chat.name ?? 'Group Chat')
+        : (otherUser?.displayName ?? 'Unknown User');
+    final avatarUrl = chat.isGroup 
+        ? chat.avatarUrl
+        : otherUser?.avatarUrl;
+    
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0.0, end: 1.0),
       duration: Duration(milliseconds: 300 + (index * 50)),
@@ -191,12 +285,12 @@ class _ChatListScreenState extends State<ChatListScreen>
               child: CircleAvatar(
                 radius: 28,
                 backgroundColor: Colors.transparent,
-                backgroundImage: chat.avatarUrl != null
-                    ? NetworkImage(chat.avatarUrl!)
+                backgroundImage: avatarUrl != null
+                    ? NetworkImage(avatarUrl)
                     : null,
-                child: chat.avatarUrl == null
+                child: avatarUrl == null
                     ? Text(
-                        chat.name?.substring(0, 1).toUpperCase() ?? '?',
+                        displayName.substring(0, 1).toUpperCase(),
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 20,
@@ -208,7 +302,7 @@ class _ChatListScreenState extends State<ChatListScreen>
             ),
           ),
           title: Text(
-            chat.name ?? 'Unknown Chat',
+            displayName,
             style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 16,
@@ -217,7 +311,7 @@ class _ChatListScreenState extends State<ChatListScreen>
             overflow: TextOverflow.ellipsis,
           ),
           subtitle: Text(
-            chat.description ?? 'No messages yet',
+            _lastMessages[chat.id] ?? 'No messages yet',
             style: TextStyle(
               color: Colors.grey[600],
               fontSize: 14,
@@ -237,25 +331,7 @@ class _ChatListScreenState extends State<ChatListScreen>
                     fontSize: 12,
                   ),
                 ),
-              const SizedBox(height: 4),
-              // Unread badge (placeholder)
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF667eea), Color(0xFF764ba2)],
-                  ),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Text(
-                  '3',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
+              // Unread badge removed (no messages yet)
             ],
           ),
           onTap: () {

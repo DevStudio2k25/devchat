@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:devchat/models/user_model.dart';
 
@@ -109,20 +110,6 @@ class UserService {
     }
   }
 
-  /// Upload profile avatar
-  /// Note: This method needs to be called with actual File object from image_picker
-  /// For now, it's a placeholder that returns null
-  Future<String?> uploadAvatar(String userId, dynamic fileData) async {
-    try {
-      // TODO: Implement actual file upload with image_picker
-      // This is a placeholder for future implementation
-      print('⚠️ Avatar upload not yet implemented');
-      return null;
-    } catch (e) {
-      print('❌ Error uploading avatar: $e');
-      return null;
-    }
-  }
 
   /// Delete avatar
   Future<bool> deleteAvatar(String userId, String avatarUrl) async {
@@ -175,6 +162,37 @@ class UserService {
     } catch (e) {
       print('❌ Error fetching online users: $e');
       return [];
+    }
+  }
+
+  /// Upload avatar image to Supabase Storage
+  Future<String?> uploadAvatar(File imageFile) async {
+    try {
+      if (currentUserId == null) {
+        print('❌ No user logged in');
+        return null;
+      }
+
+      final fileName = '${currentUserId}_${DateTime.now().millisecondsSinceEpoch}.jpg';
+      final filePath = 'avatars/$fileName';
+
+      print('📤 Uploading to: $filePath');
+
+      // Upload to Supabase Storage
+      await _supabase.storage
+          .from('avatars')
+          .upload(filePath, imageFile);
+
+      // Get public URL
+      final publicUrl = _supabase.storage
+          .from('avatars')
+          .getPublicUrl(filePath);
+
+      print('✅ Avatar uploaded successfully: $publicUrl');
+      return publicUrl;
+    } catch (e) {
+      print('❌ Error uploading avatar: $e');
+      return null;
     }
   }
 
