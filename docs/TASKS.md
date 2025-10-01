@@ -12,11 +12,11 @@
 |-------|-------|-----------|-------------|---------|----------|
 | Phase 1: Foundation | 15 | 14 | 0 | 1 | 93% |
 | Phase 2: Core Chat | 18 | 18 | 0 | 0 | 100% |
-| Phase 3: Advanced Features | 20 | 0 | 0 | 20 | 0% |
+| Phase 3: Advanced Features | 20 | 4 | 0 | 16 | 20% |
 | Phase 4: Notifications | 12 | 0 | 0 | 12 | 0% |
 | Phase 5: Polish & Testing | 15 | 0 | 0 | 15 | 0% |
 | Phase 6: Deployment | 10 | 0 | 0 | 10 | 0% |
-| **TOTAL** | **90** | **32** | **0** | **58** | **36%** |
+| **TOTAL** | **90** | **36** | **0** | **54** | **40%** |
 
 ---
 
@@ -398,15 +398,17 @@
 ## 🚀 Phase 3: Advanced Features
 
 ### 3.1 Group Chats
-- [ ] **TASK-034**: Design group chat schema
+- [x] **TASK-034**: Design group chat schema
   - Priority: High
   - Estimated: 2h
-  - Status: 📋 Pending
+  - Status: ✅ Complete
+  - Notes: Schema already exists in database (chats, chat_members tables)
 
-- [ ] **TASK-035**: Implement group chat service
+- [x] **TASK-035**: Implement group chat service
   - Priority: High
   - Estimated: 4h
-  - Status: 📋 Pending
+  - Status: ✅ Complete
+  - Notes: Already in ChatService (createGroupChat, add/remove members, etc.)
   - Subtasks:
     - [ ] Create group chat
     - [ ] Add members
@@ -414,20 +416,22 @@
     - [ ] Update group info
     - [ ] Leave group
 
-- [ ] **TASK-036**: Create group chat screens
+- [x] **TASK-036**: Create group chat screens
   - Priority: High
   - Estimated: 5h
-  - Status: 📋 Pending
+  - Status: ✅ Complete
+  - Notes: Created CreateGroupScreen and GroupInfoScreen with modern UI
   - Subtasks:
     - [ ] Create group screen
     - [ ] Group info screen
     - [ ] Member management screen
     - [ ] Add group avatar
 
-- [ ] **TASK-037**: Implement group permissions
+- [x] **TASK-037**: Implement group permissions
   - Priority: Medium
   - Estimated: 3h
-  - Status: 📋 Pending
+  - Status: ✅ Complete
+  - Notes: Admin/member roles in ChatService, permission checks in UI
   - Subtasks:
     - [ ] Admin roles
     - [ ] Member roles
