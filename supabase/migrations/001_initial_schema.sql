@@ -423,7 +423,7 @@ USING (
   )
 );
 
-CREATE POLICY "Users can update own presence"
+CREATE POLICY "Users can insert own presence"
 ON presence FOR INSERT
 WITH CHECK (user_id = auth.uid());
 
