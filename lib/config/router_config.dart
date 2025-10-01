@@ -5,11 +5,9 @@ import 'package:devchat/screens/auth/login_screen.dart';
 import 'package:devchat/screens/auth/signup_screen.dart';
 import 'package:devchat/screens/auth/forgot_password_screen.dart';
 import 'package:devchat/screens/chat/chat_list_screen.dart';
+import 'package:devchat/screens/chat/chat_screen.dart';
 import 'package:devchat/screens/profile/profile_screen.dart';
 import 'package:devchat/screens/profile/edit_profile_screen.dart';
-
-// TODO: Import other screens when created
-// import 'package:devchat/screens/chat/chat_screen.dart';
 
 /// Router configuration for the app
 class RouterConfig {
@@ -101,7 +99,7 @@ class RouterConfig {
         name: 'chat',
         builder: (context, state) {
           final chatId = state.pathParameters['chatId'] ?? '';
-          return _PlaceholderScreen(title: 'Chat: $chatId');
+          return ChatScreen(chatId: chatId);
         },
         routes: [
           // Chat info
