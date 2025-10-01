@@ -7,7 +7,6 @@ import 'package:devchat/services/chat_service.dart';
 import 'package:devchat/services/user_service.dart';
 import 'package:devchat/models/message_model.dart';
 import 'package:devchat/models/chat_model.dart';
-import 'package:devchat/models/user_model.dart';
 
 class ChatScreen extends StatefulWidget {
   final String chatId;

@@ -1,6 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:devchat/models/chat_model.dart';
-import 'package:devchat/models/message_model.dart';
 import 'package:devchat/models/chat_member_model.dart';
 
 class ChatService {
@@ -322,7 +321,7 @@ class ChatService {
           final chats = await _supabase
               .from('chats')
               .select()
-              .in_('id', chatIds)
+              .inFilter('id', chatIds)
               .order('last_message_at', ascending: false);
 
           return (chats as List)

@@ -6,6 +6,7 @@ import 'package:devchat/screens/auth/signup_screen.dart';
 import 'package:devchat/screens/auth/forgot_password_screen.dart';
 import 'package:devchat/screens/chat/chat_list_screen.dart';
 import 'package:devchat/screens/chat/chat_screen.dart';
+import 'package:devchat/screens/chat/user_search_screen.dart';
 import 'package:devchat/screens/profile/profile_screen.dart';
 import 'package:devchat/screens/profile/edit_profile_screen.dart';
 
@@ -166,8 +167,7 @@ class RouterConfig {
       GoRoute(
         path: AppRoutes.newChat,
         name: 'newChat',
-        builder: (context, state) =>
-            const _PlaceholderScreen(title: 'New Chat'),
+        builder: (context, state) => const UserSearchScreen(),
       ),
     ],
   );

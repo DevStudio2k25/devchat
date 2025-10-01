@@ -98,7 +98,7 @@ class UserService {
       final response = await _supabase
           .from('users')
           .select()
-          .in_('id', userIds);
+          .inFilter('id', userIds);
 
       return (response as List)
           .map((json) => UserModel.fromJson(json))
@@ -110,24 +110,14 @@ class UserService {
   }
 
   /// Upload profile avatar
-  Future<String?> uploadAvatar(String userId, String filePath) async {
+  /// Note: This method needs to be called with actual File object from image_picker
+  /// For now, it's a placeholder that returns null
+  Future<String?> uploadAvatar(String userId, dynamic fileData) async {
     try {
-      final fileName = '$userId-${DateTime.now().millisecondsSinceEpoch}.jpg';
-      final path = 'avatars/$fileName';
-
-      await _supabase.storage.from('avatars').upload(
-            path,
-            filePath,
-            fileOptions: const FileOptions(upsert: true),
-          );
-
-      final publicUrl = _supabase.storage.from('avatars').getPublicUrl(path);
-
-      // Update user profile with new avatar URL
-      await updateUserProfile(userId: userId, avatarUrl: publicUrl);
-
-      print('✅ Avatar uploaded successfully');
-      return publicUrl;
+      // TODO: Implement actual file upload with image_picker
+      // This is a placeholder for future implementation
+      print('⚠️ Avatar upload not yet implemented');
+      return null;
     } catch (e) {
       print('❌ Error uploading avatar: $e');
       return null;
