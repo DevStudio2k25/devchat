@@ -12,11 +12,11 @@
 |-------|-------|-----------|-------------|---------|----------|
 | Phase 1: Foundation | 15 | 14 | 0 | 1 | 93% |
 | Phase 2: Core Chat | 18 | 18 | 0 | 0 | 100% |
-| Phase 3: Advanced Features | 20 | 4 | 0 | 16 | 20% |
+| Phase 3: Advanced Features | 20 | 8 | 0 | 12 | 40% |
 | Phase 4: Notifications | 12 | 0 | 0 | 12 | 0% |
 | Phase 5: Polish & Testing | 15 | 0 | 0 | 15 | 0% |
 | Phase 6: Deployment | 10 | 0 | 0 | 10 | 0% |
-| **TOTAL** | **90** | **36** | **0** | **54** | **40%** |
+| **TOTAL** | **90** | **40** | **0** | **50** | **44%** |
 
 ---
 
@@ -438,10 +438,11 @@
     - [ ] Permission checks
 
 ### 3.2 File Sharing
-- [ ] **TASK-038**: Implement file upload service
+- [x] **TASK-038**: Implement file upload service
   - Priority: High
   - Estimated: 3h
-  - Status: 📋 Pending
+  - Status: ✅ Complete
+  - Notes: Complete FileService with Supabase Storage integration
   - Subtasks:
     - [ ] Upload to Supabase Storage
     - [ ] Generate file URLs
@@ -449,29 +450,32 @@
     - [ ] Validate file types
     - [ ] Limit file sizes
 
-- [ ] **TASK-039**: Add image picker
+- [x] **TASK-039**: Add image picker
   - Priority: High
   - Estimated: 2h
-  - Status: 📋 Pending
+  - Status: ✅ Complete
+  - Notes: FilePickerHelper with camera/gallery support and compression
   - Subtasks:
     - [ ] Integrate image_picker
     - [ ] Camera support
     - [ ] Gallery support
     - [ ] Image compression
 
-- [ ] **TASK-040**: Add file picker
+- [x] **TASK-040**: Add file picker
   - Priority: High
   - Estimated: 2h
-  - Status: 📋 Pending
+  - Status: ✅ Complete
+  - Notes: Unified file picker for documents, audio, video
   - Subtasks:
     - [ ] Integrate file_picker
     - [ ] Support multiple file types
     - [ ] File preview
 
-- [ ] **TASK-041**: Create file message UI
+- [x] **TASK-041**: Create file message UI
   - Priority: High
   - Estimated: 3h
-  - Status: 📋 Pending
+  - Status: ✅ Complete
+  - Notes: FileMessageBubble, ImageMessageBubble, VideoMessageBubble widgets
   - Subtasks:
     - [ ] Image message bubble
     - [ ] Document message bubble
