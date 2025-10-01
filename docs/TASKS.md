@@ -11,12 +11,12 @@
 | Phase | Tasks | Completed | In Progress | Pending | Progress |
 |-------|-------|-----------|-------------|---------|----------|
 | Phase 1: Foundation | 15 | 14 | 0 | 1 | 93% |
-| Phase 2: Core Chat | 18 | 0 | 0 | 18 | 0% |
+| Phase 2: Core Chat | 18 | 1 | 0 | 17 | 6% |
 | Phase 3: Advanced Features | 20 | 0 | 0 | 20 | 0% |
 | Phase 4: Notifications | 12 | 0 | 0 | 12 | 0% |
 | Phase 5: Polish & Testing | 15 | 0 | 0 | 15 | 0% |
 | Phase 6: Deployment | 10 | 0 | 0 | 10 | 0% |
-| **TOTAL** | **90** | **14** | **0** | **76** | **16%** |
+| **TOTAL** | **90** | **15** | **0** | **75** | **17%** |
 
 ---
 
@@ -206,10 +206,11 @@
 ## 💬 Phase 2: Core Chat Features
 
 ### 2.1 User Profiles
-- [ ] **TASK-016**: Create user profile model
+- [x] **TASK-016**: Create user profile model
   - Priority: High
   - Estimated: 1h
-  - Status: 📋 Pending
+  - Status: ✅ Complete
+  - Notes: Created UserModel, ChatModel, MessageModel, ChatMemberModel with full JSON serialization
 
 - [ ] **TASK-017**: Implement profile service
   - Priority: High
