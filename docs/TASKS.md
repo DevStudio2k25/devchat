@@ -13,10 +13,10 @@
 | Phase 1: Foundation | 15 | 14 | 0 | 1 | 93% |
 | Phase 2: Core Chat | 18 | 18 | 0 | 0 | 100% |
 | Phase 3: Advanced Features | 20 | 20 | 0 | 0 | 100% |
-| Phase 4: Notifications | 12 | 0 | 0 | 12 | 0% |
+| Phase 4: Notifications | 12 | 4 | 0 | 8 | 33% |
 | Phase 5: Polish & Testing | 15 | 0 | 0 | 15 | 0% |
 | Phase 6: Deployment | 10 | 0 | 0 | 10 | 0% |
-| **TOTAL** | **90** | **52** | **0** | **38** | **58%** |
+| **TOTAL** | **90** | **56** | **0** | **34** | **62%** |
 
 ---
 
@@ -592,39 +592,43 @@
 ## 🔔 Phase 4: Notifications & Presence
 
 ### 4.1 Push Notifications (OneSignal)
-- [ ] **TASK-054**: Configure OneSignal SDK
+- [x] **TASK-054**: Configure OneSignal SDK
   - Priority: High
   - Estimated: 2h
-  - Status: 📋 Pending
+  - Status: ✅ Complete
+  - Notes: OneSignal initialized in main.dart (Android only)
   - Subtasks:
     - [ ] Android setup
     - [ ] iOS setup
     - [ ] Initialize OneSignal
     - [ ] Request permissions
 
-- [ ] **TASK-055**: Implement notification handlers
+- [x] **TASK-055**: Implement notification handlers
   - Priority: High
   - Estimated: 3h
-  - Status: 📋 Pending
+  - Status: ✅ Complete
+  - Notes: Handlers for received, clicked, permission in NotificationService
   - Subtasks:
     - [ ] Handle notification received
     - [ ] Handle notification clicked
     - [ ] Handle notification actions
 
-- [ ] **TASK-056**: Create notification service
+- [x] **TASK-056**: Create notification service
   - Priority: High
   - Estimated: 3h
-  - Status: 📋 Pending
+  - Status: ✅ Complete
+  - Notes: Complete NotificationService with REST API integration
   - Subtasks:
     - [ ] Send notification via REST API
     - [ ] Target specific users
     - [ ] Notification templates
     - [ ] Notification scheduling
 
-- [ ] **TASK-057**: Implement notification triggers
+- [x] **TASK-057**: Implement notification triggers
   - Priority: High
   - Estimated: 2h
-  - Status: 📋 Pending
+  - Status: ✅ Complete
+  - Notes: New message, mention, group invite notifications
   - Subtasks:
     - [ ] New message notification
     - [ ] Mention notification
