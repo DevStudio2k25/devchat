@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:devchat/constants/app_routes.dart';
 import 'package:devchat/screens/auth/login_screen.dart';
 import 'package:devchat/screens/auth/signup_screen.dart';
+import 'package:devchat/screens/auth/forgot_password_screen.dart';
 
 // TODO: Import other screens when created
 // import 'package:devchat/screens/chat/chat_list_screen.dart';
@@ -77,8 +78,7 @@ class RouterConfig {
       GoRoute(
         path: AppRoutes.forgotPassword,
         name: 'forgotPassword',
-        builder: (context, state) =>
-            const _PlaceholderScreen(title: 'Forgot Password'),
+        builder: (context, state) => const ForgotPasswordScreen(),
       ),
 
       // Main app routes
