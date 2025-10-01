@@ -1,0 +1,58 @@
+🚀 Features
+
+🔐 Authentication → Email/Password + Social Login (via Supabase Auth)
+
+👤 User Profiles → Store/display developer info (username, avatar, bio)
+
+💬 Real-time Chat → 1-to-1 and Group Chats with Supabase Realtime
+
+🧵 Threaded Messages → Reply to specific messages
+
+📎 File Sharing → Upload & share code snippets, images, docs (Supabase Storage)
+
+🟢 Presence Indicator → Online/Offline status of users
+
+🔔 Push Notifications → New message alerts (OneSignal/FCM integration)
+
+🔍 Search → Search chats, messages, and users
+
+⭐ Message Reactions → Emoji-based reactions
+
+🛡 Secure Data → Row-level security policies in Supabase
+
+⚡ Cross-platform → Flutter app running on Android, iOS, Web, Desktop
+
+📦 Packages Used
+🔑 Authentication & Database
+
+supabase_flutter → Supabase integration (Auth, Database, Storage, Realtime)
+
+flutter_secure_storage → Secure token storage
+
+💬 Chat & UI
+
+flutter_chat_ui → Prebuilt chat interface components
+
+flutter_chat_types → Chat message models
+
+emoji_picker_flutter → Emoji selector
+
+📎 File & Media
+
+image_picker → Select/upload images
+
+file_picker → Select documents/files
+
+open_filex → Open shared files
+
+🔔 Notifications
+
+onesignal_flutter or firebase_messaging → Push notifications
+
+🌐 Utilities
+
+provider / riverpod → State management
+
+intl → Date & time formatting
+
+uuid → Generate unique message IDs
